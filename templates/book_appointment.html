@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment | MediSphere</title>
+    <link rel="icon" href="http://127.0.0.1:5000/static/images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --primary-light: #e0e6ff;
+            --secondary: #00c4a1;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            margin: 0;
+            padding: 0;
+        }
+
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .navbar-brand h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin: 0;
+            font-weight: 700;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 120px;
+            padding-bottom: 50px;
+        }
+
+        /* Booking Header */
+        .booking-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .booking-header h1 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .booking-header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Booking Steps */
+        .booking-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .step-connector {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .step-connector-progress {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 3px;
+            background: var(--primary);
+            z-index: 2;
+            transition: all 0.3s ease;
+            width: 33%;
+        }
+
+        .booking-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 3;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .booking-step.active .step-number {
+            background: var(--primary);
+            color: white;
+        }
+
+        .booking-step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Booking Content */
+        .booking-content {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .doctor-selection {
+            flex: 2;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 3rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .filter-dropdown select {
+            padding: 0.85rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            min-width: 200px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-dropdown select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        /* Improved Doctor Cards */
+        .doctors-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .doctor-card {
+            display: flex;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doctor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-light);
+        }
+
+        .doctor-card.selected {
+            border-color: var(--primary);
+            background: #f8faff;
+        }
+
+        .doctor-card.selected::before {
+            background: var(--primary);
+        }
+
+        .doctor-image-container {
+            width: 120px;
+            min-width: 120px;
+            height: 120px;
+            margin-right: 20px;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .doctor-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 70%;
+            object-fit: cover;
+            border: 3px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .doctor-card.selected .doctor-image {
+            border-color: var(--primary-light);
+        }
+
+        .doctor-info {
+            flex: 1;
+        }
+
+        .doctor-name {
+            font-size: 1.3rem;
+            margin: 0 0 0.25rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .doctor-specialty {
+            margin: 0 0 0.5rem;
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .doctor-rating {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+
+        .stars {
+            color: #ffc107;
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .review-count {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .doctor-availability {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .availability-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--dark);
+            background: var(--light);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        .availability-item i {
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+
+        .doctor-actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 1rem;
+            min-width: 120px;
+        }
+
+        .select-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid var(--primary);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .select-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .select-btn.outline {
+            background: transparent;
+            color: var(--primary);
+        }
+
+        .select-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 107, 255, 0.2);
+        }
+
+        .view-profile {
+            margin-top: 0.5rem;
+            color: var(--primary);
+            font-size: 0.85rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-profile:hover {
+            text-decoration: underline;
+        }
+
+        /* Booking Summary */
+        .booking-summary {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 140px;
+            height: fit-content;
+        }
+
+        .summary-header {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .summary-header i {
+            color: var(--primary);
+        }
+
+        .summary-details {
+            margin-bottom: 2rem;
+        }
+
+        .detail-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--dark);
+            min-width: 100px;
+            font-size: 0.95rem;
+        }
+
+        .detail-value {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .detail-value.not-selected {
+            color: var(--warning);
+            font-style: italic;
+        }
+
+        .consultation-type {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .continue-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .continue-btn:hover {
+            background: #3a56e0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 107, 255, 0.3);
+        }
+
+        .continue-btn:disabled {
+            background: #e2e8f0;
+            color: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .booking-content {
+                flex-direction: column;
+            }
+            
+            .booking-steps {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .step-connector,
+            .step-connector-progress {
+                display: none;
+            }
+
+            .booking-summary {
+                position: static;
+                margin-top: 2rem;
+            }
+
+            .doctor-card {
+                flex-direction: column;
+            }
+
+            .doctor-image-container {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+
+            .doctor-actions {
+                margin-left: 0;
+                margin-top: 1rem;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .select-btn {
+                width: 48%;
+            }
+
+            .view-profile {
+                display: none;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .doctor-card {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar with MediSphere Branding -->
+<nav class="navbar">
+    <div class="container">
+        <a href="/" class="navbar-brand">
+    	    <img src="/static/images/logo.png" alt="MediSphere Logo">
+    		<h1>MediSphere</h1>
+	    </a>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/#about">About</a>
+            <a href="/#doctors">Doctors</a>
+            <a href="/#services">Services</a>
+            <a href="/#contact">Contact</a>
+            <div class="dropdown">
+                <button class="dropbtn">More <i class="fas fa-chevron-down"></i>
+                <div class="dropdown-content">
+                    <a href="/video_call">Video Consultation</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="#testimonials">Testimonials</a>
+                </div>
+            </div>
+        </div>
+        <div class="auth-buttons">
+            <a href="/dashboard" class="btn btn-outline">Dashboard</a>
+        </div>
+        <div class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+</nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Booking Header -->
+            <div class="booking-header">
+                <h1>Book Your Consultation</h1>
+                <p>Connect with our expert healthcare professionals at your convenience</p>
+            </div>
+
+            <!-- Booking Steps -->
+            <div class="booking-steps">
+                <div class="step-connector"></div>
+                <div class="step-connector-progress"></div>
+                
+                <div class="booking-step active">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Select Doctor</div>
+                </div>
+                
+                <div class="booking-step">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Choose Time</div>
+                </div>
+                
+                <div class="booking-step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Confirm</div>
+                </div>
+            </div>
+
+            <!-- Booking Content -->
+            <div class="booking-content">
+                <!-- Doctor Selection -->
+                <div class="doctor-selection">
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search doctors by name or specialty...">
+                        </div>
+                        <div class="filter-dropdown">
+                            <select>
+                                <option value="">All Specialties</option>
+                                <option value="cardiology">Cardiology</option>
+                                <option value="neurology">Neurology</option>
+                                <option value="pediatrics">Pediatrics</option>
+                                <option value="dermatology">Dermatology</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="doctors-list">
+                        <!-- Doctor Card 1 -->
+                        <div class="doctor-card selected">
+                            <div class="doctor-image-container">
+                                <img src="/static/images/Dr1.png" alt="Dr. Sarah Johnson" class="doctor-image">
+                            </div>
+                            <div class="doctor-info">
+                                <h3 class="doctor-name">Dr. Sarah Johnson</h3>
+                                <p class="doctor-specialty">Cardiologist</p>
+                                <div class="doctor-rating">
+                                    <div class="stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <span class="review-count">4.5 (120 reviews)</span>
+                                </div>
+                                <div class="doctor-availability">
+                                    <div class="availability-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>New York, USA</span>
+                                    </div>
+                                    <div class="availability-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Available Today</span>
+                                    </div>
+                                </div>
+                                <span class="consultation-type">Video Consultation Available</span>
+                            </div>
+                            <div class="doctor-actions">
+                                <button class="select-btn primary">Selected</button>
+                                <span class="view-profile">View Profile</span>
+                            </div>
+                        </div>
+
+                        <!-- Doctor Card 2 -->
+                        <div class="doctor-card">
+                            <div class="doctor-image-container">
+                                <img src="/static/images/Dr2.png" alt="Dr. Michael Chen" class="doctor-image">
+                            </div>
+                            <div class="doctor-info">
+                                <h3 class="doctor-name">Dr. Michael Chen</h3>
+                                <p class="doctor-specialty">Neurologist</p>
+                                <div class="doctor-rating">
+                                    <div class="stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="review-count">5.0 (85 reviews)</span>
+                                </div>
+                                <div class="doctor-availability">
+                                    <div class="availability-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>L.A., USA</span>
+                                    </div>
+                                    <div class="availability-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Available Tomorrow</span>
+                                    </div>
+                                </div>
+                                <span class="consultation-type">Video Consultation Available</span>
+                            </div>
+                            <div class="doctor-actions">
+                                <button class="select-btn outline">Select</button>
+                                <span class="view-profile">View Profile</span>
+                            </div>
+                        </div>
+
+                        <!-- Doctor Card 3 -->
+                        <div class="doctor-card">
+                            <div class="doctor-image-container">
+                                <img src="/static/images/Dr3.png" alt="Dr. Priya Patel" class="doctor-image">
+                            </div>
+                            <div class="doctor-info">
+                                <h3 class="doctor-name">Dr. Priya Patel</h3>
+                                <p class="doctor-specialty">Pediatrician</p>
+                                <div class="doctor-rating">
+                                    <div class="stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </div>
+                                    <span class="review-count">4.0 (64 reviews)</span>
+                                </div>
+                                <div class="doctor-availability">
+                                    <div class="availability-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>Chicago, USA</span>
+                                    </div>
+                                    <div class="availability-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Available in 2 days</span>
+                                    </div>
+                                </div>
+                                <span class="consultation-type">Video Consultation Available</span>
+                            </div>
+                            <div class="doctor-actions">
+                                <button class="select-btn outline">Select</button>
+                                <span class="view-profile">View Profile</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Summary -->
+                <div class="booking-summary">
+                    <h2 class="summary-header"><i class="fas fa-calendar-check"></i> Appointment Summary</h2>
+                    <div class="summary-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Doctor:</div>
+                            <div class="detail-value">Dr. Sarah Johnson</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Specialty:</div>
+                            <div class="detail-value">Cardiology</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Date:</div>
+                            <div class="detail-value not-selected">Not selected</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Time:</div>
+                            <div class="detail-value not-selected">Not selected</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Consult:</div>
+                            <div class="detail-value">Video</div>
+                        </div>
+                    </div>
+                    <button class="continue-btn">Continue to Time Selection</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>MediSphere</h3>
+                <p>Your trusted partner in healthcare. Providing quality medical services through inn
+technology.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#about">About Us</a></li>
+                    <li><a href="/#doctors">Doctors</a></li>
+                    <li><a href="/#services">Services</a></li>
+                    <li><a href="/#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Services</h3>
+                <ul>
+                    <li><a href="/book_appointment">Appointments</a></li>
+                    <li><a href="/video_call">Video Consultation</a></li>
+                    <li><a href="#">Emergency Care</a></li>
+                    <li><a href="#">Health Checkup</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Newsletter</h3>
+                <p>Subscribe to our newsletter for the latest updates.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Your Email" required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 MediSphere. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Doctor selection functionality
+        const doctorCards = document.querySelectorAll('.doctor-card');
+        const continueBtn = document.querySelector('.continue-btn');
+        const summaryDoctor = document.querySelectorAll('.detail-value')[0];
+        const summarySpecialty = document.querySelectorAll('.detail-value')[1];
+        const summaryConsultation = document.querySelectorAll('.detail-value')[4];
+        
+        // Initialize with first doctor selected
+        let selectedDoctor = {
+            name: "Dr. Sarah Johnson",
+            specialty: "Cardiology",
+            consultation: "Video"
+        };
+
+        // Update summary function
+        function updateSummary() {
+            summaryDoctor.textContent = selectedDoctor.name;
+            summarySpecialty.textContent = selectedDoctor.specialty;
+            summaryConsultation.textContent = selectedDoctor.consultation;
+        }
+
+        doctorCards.forEach(card => {
+            const selectBtn = card.querySelector('.select-btn');
+            
+            selectBtn.addEventListener('click', function() {
+                // Remove selected class from all cards
+                doctorCards.forEach(c => {
+                    c.classList.remove('selected');
+                    const btn = c.querySelector('.select-btn');
+                    btn.classList.remove('primary');
+                    btn.classList.add('outline');
+                    btn.textContent = 'Select';
+                });
+                
+                // Add selected class to clicked card
+                card.classList.add('selected');
+                selectBtn.classList.remove('outline');
+                selectBtn.classList.add('primary');
+                selectBtn.textContent = 'Selected';
+                
+                // Update selected doctor info
+                selectedDoctor = {
+                    name: card.querySelector('.doctor-name').textContent,
+                    specialty: card.querySelector('.doctor-specialty').textContent,
+                    consultation: "Video" // Default to video for all doctors in this example
+                };
+                
+                updateSummary();
+            });
+        });
+
+        // View profile functionality
+        document.querySelectorAll('.view-profile').forEach(link => {
+            link.addEventListener('click', function() {
+                const doctorName = this.closest('.doctor-card').querySelector('.doctor-name').textContent;
+                alert(`Profile page for ${doctorName} would open here`);
+            });
+        });
+
+        // Initialize summary
+        updateSummary();
+    </script>
+</body>
+</html>

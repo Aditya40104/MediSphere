@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | MediSphere</title>
+    <link rel="icon" href="http://127.0.0.1:5000/static/images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --primary-light: #e0e6ff;
+            --secondary: #00c4a1;
+            --danger: #ff4757;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            color: var(--dark);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .sidebar-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.75rem;
+        }
+
+        .user-info h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .user-info p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            text-decoration: none;
+            color: var(--dark);
+            transition: all 0.2s ease;
+        }
+
+        .menu-item i {
+            width: 24px;
+            margin-right: 0.75rem;
+            color: var(--gray);
+        }
+
+        .menu-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .menu-item:hover i {
+            color: var(--primary);
+        }
+
+        .menu-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .menu-item.active i {
+            color: var(--primary);
+        }
+
+        .sidebar-footer {
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn i {
+            margin-right: 0.75rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--dark);
+        }
+
+        .dashboard-title p {
+            margin: 0.25rem 0 0;
+            color: var(--gray);
+        }
+
+        .new-appointment-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .new-appointment-btn:hover {
+            background: #3a56e0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 107, 255, 0.3);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .stat-icon.upcoming {
+            background: rgba(74, 107, 255, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-icon.past {
+            background: rgba(156, 163, 175, 0.1);
+            color: var(--gray);
+        }
+
+        .stat-icon.prescriptions {
+            background: rgba(0, 196, 161, 0.1);
+            color: var(--secondary);
+        }
+
+        .stat-icon.reports {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .stat-title {
+            font-size: 0.95rem;
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--dark);
+        }
+
+        /* Appointments Section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .view-all:hover {
+            text-decoration: underline;
+        }
+
+        .appointments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .appointment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            transition: all 0.3s ease;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 1.5rem;
+            border: 3px solid var(--primary-light);
+        }
+
+        .appointment-info {
+            flex: 1;
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .doctor-name {
+            font-size: 1.2rem;
+            margin: 0;
+            color: var(--dark);
+        }
+
+        .doctor-specialty {
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin: 0.25rem 0;
+        }
+
+        .appointment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-upcoming {
+            background: rgba(74, 107, 255, 0.1);
+            color: var(--primary);
+        }
+
+        .appointment-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .detail-item i {
+            color: var(--primary);
+            width: 20px;
+            text-align: center;
+        }
+
+        .appointment-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .video-btn {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+        }
+
+        .video-btn:hover {
+            background: rgba(74, 107, 255, 0.2);
+        }
+
+        .details-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .details-btn:hover {
+            background: #3a56e0;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 1rem;
+            }
+            
+            .sidebar-header {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+            
+            .sidebar-menu {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .menu-item {
+                margin-bottom: 0;
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            .sidebar-footer {
+                width: 100%;
+            }
+            
+            .appointment-card {
+                flex-direction: column;
+            }
+            
+            .doctor-avatar {
+                margin-right: 0;
+                margin-bottom: 1rem;
+                align-self: center;
+            }
+            
+            .appointment-actions {
+                margin-top: 1rem;
+                justify-content: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card, .appointment-card {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar with MediSphere Branding -->
+<nav class="navbar">
+    <div class="container">
+        <a href="/" class="navbar-brand">
+    	    <img src="/static/images/logo.png" alt="MediSphere Logo">
+    		<h1>MediSphere</h1>
+	    </a>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/#about">About</a>
+            <a href="/#doctors">Doctors</a>
+            <a href="/#services">Services</a>
+            <a href="/#contact">Contact</a>
+            <div class="dropdown">
+                <button class="dropbtn">More <i class="fas fa-chevron-down"></i></button>
+                <div class="dropdown-content">
+                    <a href="/video_call">Video Consultation</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="#testimonials">Testimonials</a>
+                </div>
+            </div>
+        </div>
+        <div class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+</nav><br><br><br>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="User Avatar">
+                <div class="user-info">
+                    <h3>John Doe</h3>
+                    <p>Member since June 2023</p>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="/dashboard" class="menu-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/appointments" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Appointments</span>
+                </a>
+                <a href="/doctors" class="menu-item">
+                    <i class="fas fa-user-md"></i>
+                    <span>Doctors</span>
+                </a>
+                <a href="/prescriptions" class="menu-item">
+                    <i class="fas fa-prescription-bottle-alt"></i>
+                    <span>Prescriptions</span>
+                </a>
+                <a href="/health-records" class="menu-item">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health Records</span>
+                </a>
+                <a href="/reports" class="menu-item">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Medical Reports</span>
+                </a>
+                <a href="/settings" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="/help" class="menu-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Log Out</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h1>Welcome Back, John</h1>
+                    <p>Here's what's happening with your health today</p>
+                </div>
+                <button class="new-appointment-btn" onclick="window.location.href='/book_appointment'">
+                    <i class="fas fa-plus"></i>
+                    <span>New Appointment</span>
+                </button>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon upcoming">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <p class="stat-title">Upcoming Appointments</p>
+                            <h3 class="stat-value">2</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon past">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div>
+                            <p class="stat-title">Past Appointments</p>
+                            <h3 class="stat-value">5</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon prescriptions">
+                            <i class="fas fa-prescription-bottle-alt"></i>
+                        </div>
+                        <div>
+                            <p class="stat-title">Active Prescriptions</p>
+                            <h3 class="stat-value">3</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon reports">
+                            <i class="fas fa-file-medical"></i>
+                        </div>
+                        <div>
+                            <p class="stat-title">Medical Reports</p>
+                            <h3 class="stat-value">4</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upcoming Appointments -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-check"></i>
+                        Upcoming Appointments
+                    </h2>
+                    <a href="/appointments" class="view-all">View All</a>
+                </div>
+                
+                <div class="appointments-list">
+                    <!-- Appointment 1 -->
+                    <div class="appointment-card">
+                        <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Dr. Sarah Johnson" class="doctor-avatar">
+                        <div class="appointment-info">
+                            <div class="appointment-header">
+                                <div>
+                                    <h3 class="doctor-name">Dr. Sarah Johnson</h3>
+                                    <p class="doctor-specialty">Cardiologist</p>
+                                </div>
+                                <span class="appointment-status status-upcoming">Upcoming</span>
+                            </div>
+                            
+                            <div class="appointment-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>June 15, 2023</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>10:00 AM - 10:30 AM</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clipboard"></i>
+                                    <span>Routine Checkup</span>
+                                </div>
+                            </div>
+                            
+                            <div class="appointment-actions">
+                                <button class="action-btn video-btn">
+                                    <i class="fas fa-video"></i>
+                                    <span>Join Call</span>
+                                </button>
+                                <button class="action-btn details-btn">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>View Details</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Appointment 2 -->
+                    <div class="appointment-card">
+                        <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80" alt="Dr. Michael Chen" class="doctor-avatar">
+                        <div class="appointment-info">
+                            <div class="appointment-header">
+                                <div>
+                                    <h3 class="doctor-name">Dr. Michael Chen</h3>
+                                    <p class="doctor-specialty">Neurologist</p>
+                                </div>
+                                <span class="appointment-status status-upcoming">Upcoming</span>
+                            </div>
+                            
+                            <div class="appointment-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>June 20, 2023</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>2:00 PM - 2:45 PM</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clipboard"></i>
+                                    <span>Follow-up Consultation</span>
+                                </div>
+                            </div>
+                            
+                            <div class="appointment-actions">
+                                <button class="action-btn video-btn">
+                                    <i class="fas fa-video"></i>
+                                    <span>Join Call</span>
+                                </button>
+                                <button class="action-btn details-btn">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>View Details</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Prescriptions -->
+            <div class="dashboard-section" style="margin-top: 3rem;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-prescription-bottle-alt"></i>
+                        Recent Prescriptions
+                    </h2>
+                    <a href="/prescriptions" class="view-all">View All</a>
+                </div>
+                
+                <div class="appointments-list">
+                    <div class="appointment-card">
+                        <div class="appointment-info" style="width: 100%;">
+                            <div class="appointment-header">
+                                <div>
+                                    <h3 class="doctor-name">Medication for Hypertension</h3>
+                                    <p class="doctor-specialty">Prescribed by Dr. Sarah Johnson</p>
+                                </div>
+                                <span class="appointment-status status-upcoming">Active</span>
+                            </div>
+                            
+                            <div class="appointment-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Issued: June 5, 2023</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-pills"></i>
+                                    <span>3 medications</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Valid until: September 5, 2023</span>
+                                </div>
+                            </div>
+                            
+                            <div class="appointment-actions">
+                                <button class="action-btn video-btn">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>View Details</span>
+                                </button>
+                                <button class="action-btn details-btn">
+                                    <i class="fas fa-download"></i>
+                                    <span>Download</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>MediSphere</h3>
+                <p>Your trusted partner in healthcare. Providing quality medical services through inn
+technology.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#about">About Us</a></li>
+                    <li><a href="/#doctors">Doctors</a></li>
+                    <li><a href="/#services">Services</a></li>
+                    <li><a href="/#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Services</h3>
+                <ul>
+                    <li><a href="/book_appointment">Appointments</a></li>
+                    <li><a href="/video_call">Video Consultation</a></li>
+                    <li><a href="#">Emergency Care</a></li>
+                    <li><a href="#">Health Checkup</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Newsletter</h3>
+                <p>Subscribe to our newsletter for the latest updates.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Your Email" required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 MediSphere. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Simple animation for stats cards
+        const statCards = document.querySelectorAll('.stat-card');
+        
+        statCards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+        
+        // Logout functionality
+        const logoutBtn = document.querySelector('.logout-btn');
+        logoutBtn.addEventListener('click', function() {
+            if(confirm('Are you sure you want to log out?')) {
+                window.location.href = '/login';
+            }
+        });
+        
+        // Simulate loading data
+        setTimeout(() => {
+            document.querySelectorAll('.stat-value').forEach(el => {
+                el.style.transition = 'all 0.5s ease';
+                el.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    el.style.transform = 'scale(1)';
+                }, 500);
+            });
+        }, 1000);
+    </script>
+</body>
+</html>

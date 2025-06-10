@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Consultation | MediSphere</title>
+    <link rel="icon" href="http://127.0.0.1:5000/static/images/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --primary-light: #e0e6ff;
+            --secondary: #00c4a1;
+            --danger: #ff4757;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            color: var(--dark);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .navbar {
+            background-color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .navbar-brand img {
+            height: 36px;
+            margin-right: 10px;
+        }
+
+        .navbar-brand h1 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .consultation-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .doctor-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--primary-light);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+        }
+
+        .doctor-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .doctor-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .consultation-timer {
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .video-container {
+            display: flex;
+            height: calc(100vh - 72px);
+        }
+
+        .video-main {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            background: #edf2f7;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            flex: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .video-feed {
+            background: var(--dark);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .video-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .video-placeholder p {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .participant-info {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .participant-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .video-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: var(--dark);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .end-call-btn {
+            background: var(--danger);
+            color: white;
+            width: 60px;
+            height: 60px;
+        }
+
+        .sidebar {
+            flex: 1;
+            max-width: 350px;
+            background: white;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.05);
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-title i {
+            color: var(--primary);
+        }
+
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .patient-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-light);
+        }
+
+        .patient-details h3 {
+            margin: 0 0 0.25rem;
+            font-size: 1.1rem;
+        }
+
+        .patient-details p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .appointment-details p {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0 0 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .appointment-details i {
+            width: 20px;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1rem;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            max-width: 80%;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .doctor-message {
+            background: var(--primary-light);
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .patient-message {
+            background: #f1f5f9;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--gray);
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 0.95rem;
+        }
+
+        .chat-input button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chat-input button:hover {
+            background: #3a56e0;
+            transform: translateY(-2px);
+        }
+
+        .prescription-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .prescription-btn:hover {
+            background: #00b393;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 196, 161, 0.2);
+        }
+
+        @media (max-width: 992px) {
+            .video-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                max-width: 100%;
+                border-top: 1px solid #e2e8f0;
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .ringing-animation {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="container">
+        <a href="/" class="navbar-brand">
+    	    <img src="/static/images/logo.png" alt="MediSphere Logo">
+    		<h1>MediSphere</h1>
+	    </a>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/#about">About</a>
+            <a href="/#doctors">Doctors</a>
+            <a href="/#services">Services</a>
+            <a href="/#contact">Contact</a>
+        </div>
+        <div class="consultation-info">
+        <div class="doctor-badge">
+            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&
+w=100&q=80" alt="Dr. Sarah Johnson" class="doctor-avatar">
+            <span class="doctor-name">Dr. Sarah Johnson</span>
+        </div>
+        <div class="consultation-timer">
+            <i class="fas fa-clock"></i> 14:32
+        </div>
+    </div>
+        <div class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+</nav><br><br><br><br>
+
+
+    <!-- Video Consultation Container -->
+    <div class="video-container">
+        <!-- Main Video Area -->
+        <div class="video-main">
+            <div class="video-grid">
+                <!-- Doctor's Video Feed -->
+                <div class="video-feed ringing-animation">
+                    <div class="video-placeholder">
+                        <i class="fas fa-user-md"></i>
+                        <p>Waiting for doctor to join...</p>
+                    </div>
+                    <div class="participant-info">
+                        <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" alt="Dr. Sarah Johnson" class="participant-avatar">
+                        <span>Dr. Sarah Johnson</span>
+                    </div>
+                </div>
+                
+                <!-- Patient's Video Feed -->
+                <div class="video-feed">
+                    <div class="video-placeholder">
+                        <i class="fas fa-user"></i>
+                        <p>Your camera is off</p>
+                    </div>
+                    <div class="participant-info">
+                        <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" alt="John Doe" class="participant-avatar">
+                        <span>You</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Video Controls -->
+            <div class="video-controls">
+                <button class="control-btn active" id="micToggle">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button class="control-btn" id="videoToggle">
+                    <i class="fas fa-video"></i>
+                </button>
+                <button class="control-btn" id="screenShare">
+                    <i class="fas fa-desktop"></i>
+                </button>
+                <button class="control-btn" id="chatToggle">
+                    <i class="fas fa-comment-medical"></i>
+                </button>
+                <button class="control-btn end-call-btn" id="endCall">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h2 class="sidebar-title"><i class="fas fa-user-injured"></i> Patient Information</h2>
+                <div class="patient-info">
+                    <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" alt="John Doe" class="patient-avatar">
+                    <div class="patient-details">
+                        <h3>John Doe</h3>
+                        <p>32 years old</p>
+                        <p>Patient ID: MS-58742</p>
+                    </div>
+                </div>
+                
+                <h2 class="sidebar-title"><i class="fas fa-calendar-check"></i> Appointment Details</h2>
+                <div class="appointment-details">
+                    <p><i class="fas fa-stethoscope"></i> <span>Routine checkup & headache consultation</span></p>
+                    <p><i class="fas fa-clock"></i> <span>Today, 2:00 PM - 2:30 PM (30 mins)</span></p>
+                    <p><i class="fas fa-file-medical"></i> <span>Follow-up from June 15 visit</span></p>
+                </div>
+                
+                <button class="prescription-btn">
+                    <i class="fas fa-prescription"></i> Generate E-Prescription
+                </button>
+            </div>
+            
+            <div class="sidebar-section chat-container">
+                <h2 class="sidebar-title"><i class="fas fa-comment-medical"></i> Consultation Notes</h2>
+                <div class="chat-messages">
+                    <div class="message doctor-message">
+                        <div class="message-sender">Dr. Sarah Johnson</div>
+                        <div class="message-text">Hello John, how have you been feeling since our last visit?</div>
+                        <div class="message-time">2:05 PM</div>
+                    </div>
+                    
+                    <div class="message patient-message">
+                        <div class="message-sender">You</div>
+                        <div class="message-text">The headaches have improved but still occur 2-3 times per week</div>
+                        <div class="message-time">2:06 PM</div>
+                    </div>
+                    
+                    <div class="message doctor-message">
+                        <div class="message-sender">Dr. Sarah Johnson</div>
+                        <div class="message-text">I see. Have you been taking the medication as prescribed?</div>
+                        <div class="message-time">2:07 PM</div>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" placeholder="Type your message...">
+                    <button><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>MediSphere</h3>
+                <p>Your trusted partner in healthcare. Providing quality medical services through inn
+technology.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#about">About Us</a></li>
+                    <li><a href="/#doctors">Doctors</a></li>
+                    <li><a href="/#services">Services</a></li>
+                    <li><a href="/#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Services</h3>
+                <ul>
+                    <li><a href="/book_appointment">Appointments</a></li>
+                    <li><a href="/video_call">Video Consultation</a></li>
+                    <li><a href="#">Emergency Care</a></li>
+                    <li><a href="#">Health Checkup</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Newsletter</h3>
+                <p>Subscribe to our newsletter for the latest updates.</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Your Email" required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 MediSphere. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Toggle microphone
+        const micToggle = document.getElementById('micToggle');
+        micToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+        
+        // Toggle video
+        const videoToggle = document.getElementById('videoToggle');
+        const patientVideo = document.querySelectorAll('.video-feed')[1];
+        videoToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const placeholder = patientVideo.querySelector('.video-placeholder p');
+            placeholder.textContent = this.classList.contains('active') ? 
+                "Your camera is on" : "Your camera is off";
+        });
+        
+        // End call confirmation
+        const endCall = document.getElementById('endCall');
+        endCall.addEventListener('click', function() {
+            if(confirm('Are you sure you want to end the consultation?')) {
+                // In a real app, this would end the call and redirect
+                window.location.href = '/dashboard';
+            }
+        });
+        
+        // Simulate doctor joining after 3 seconds
+        setTimeout(function() {
+            const doctorVideo = document.querySelectorAll('.video-feed')[0];
+            doctorVideo.classList.remove('ringing-animation');
+            const placeholder = doctorVideo.querySelector('.video-placeholder p');
+            placeholder.textContent = "Dr. Johnson is online";
+        }, 3000);
+        
+        // Chat toggle for mobile
+        const chatToggle = document.getElementById('chatToggle');
+        const sidebar = document.querySelector('.sidebar');
+        chatToggle.addEventListener('click', function() {
+            if(window.innerWidth <= 992) {
+                sidebar.style.display = sidebar.style.display === 'none' ? 'flex' : 'none';
+            }
+        });
+    </script>
+</body>
+</html>
